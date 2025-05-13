@@ -4,19 +4,19 @@ import { authMiddleware, isAdmin } from '../middleware/auth';
 
 const router = express.Router();
 
-// Tüm etkinlikleri getir
-router.get('/', eventController.getAllEvents);
+// Get all events
+router.get('/api/events', eventController.getAllEvents);
 
-// Etkinlik detaylarını getir
-router.get('/:id', eventController.getEventById);
+// Get event details
+router.get('/api/events/:id', eventController.getEventById);
 
-// Yeni etkinlik oluştur (sadece admin)
-router.post('/', authMiddleware, isAdmin, eventController.createEvent);
+// Create new event (admin only)
+router.post('/api/events', authMiddleware, isAdmin, eventController.createEvent);
 
-// Etkinlik güncelle (sadece admin)
-router.put('/:id', authMiddleware, isAdmin, eventController.updateEvent);
+// Update event (admin only)
+router.put('/api/events/:id', authMiddleware, isAdmin, eventController.updateEvent);
 
-// Etkinlik sil (sadece admin)
-router.delete('/:id', authMiddleware, isAdmin, eventController.deleteEvent);
+// Delete event (admin only)
+router.delete('/api/events/:id', authMiddleware, isAdmin, eventController.deleteEvent);
 
-export default router; 
+export default router;
