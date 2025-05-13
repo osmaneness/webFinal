@@ -26,6 +26,8 @@ interface EventContextType {
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 export function EventProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/events', {
+      const response = await fetch(`${API_URL}/api/events`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -71,7 +73,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
 
   const deleteEvent = useCallback(async (id: number) => {
     try {
-      const response = await fetch(`/api/events/${id}`, {
+      const response = await fetch(`${API_URL}/api/events/${id}`, {
         method: 'DELETE',
         headers: {
           'Accept': 'application/json',
