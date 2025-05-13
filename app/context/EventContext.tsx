@@ -26,7 +26,7 @@ interface EventContextType {
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export function EventProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<Event[]>([]);
@@ -38,13 +38,19 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await fetch(`${API_URL}/api/events`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Cache-Control': 'no-cache',
         },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         let errorMessage = `Etkinlikler getirilirken bir hata oluştu (${response.status} ${response.statusText})`;
@@ -52,7 +58,8 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } catch {
-          // If we can't parse the error response, use the default message
+          // If response is not JSON, use status text
+          errorMessage = `Sunucu yanıtı alınamadı (${response.status} ${response.statusText})`;
         }
         throw new Error(errorMessage);
       }
@@ -60,12 +67,22 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       setEvents(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Etkinlikler yüklenirken hata:', err);
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : 'Sunucu ile bağlantı kurulamadı. Lütfen internet bağlantınızı ve sunucunun çalışır durumda olduğunu kontrol edin.'
-      );
+      let errorMessage: string;
+      
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          errorMessage = 'Sunucu yanıt vermedi. Lütfen daha sonra tekrar deneyin.';
+        } else if (err.message.includes('Failed to fetch')) {
+          errorMessage = 'Sunucuya bağlanılamadı. Lütfen sunucunun çalışır durumda olduğunu kontrol edin.';
+        } else {
+          errorMessage = err.message;
+        }
+      } else {
+        errorMessage = 'Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
+      }
+
+      console.error('Etkinlikler yüklenirken hata:', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -86,7 +103,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } catch {
-          // If we can't parse the error response, use the default message
+          errorMessage = `Sunucu yanıtı alınamadı (${response.status} ${response.statusText})`;
         }
         throw new Error(errorMessage);
       }
