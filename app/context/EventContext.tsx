@@ -35,19 +35,36 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://localhost:3001/api/events', {
+      
+      // Use relative URL to automatically match the current protocol and host
+      const response = await fetch('/api/events', {
         credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Etkinlikler getirilirken bir hata oluştu');
+        // Try to get detailed error message from response
+        let errorMessage = 'Etkinlikler getirilirken bir hata oluştu';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = `Sunucu hatası: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       setEvents(data);
     } catch (err) {
       console.error('Etkinlikler yüklenirken hata:', err);
-      setError(err instanceof Error ? err.message : 'Etkinlikler yüklenirken bir hata oluştu');
+      setError(
+        err instanceof Error 
+          ? err.message 
+          : 'Sunucu ile bağlantı kurulamadı. Lütfen internet bağlantınızı kontrol edin.'
+      );
     } finally {
       setLoading(false);
     }
@@ -55,13 +72,23 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
 
   const deleteEvent = useCallback(async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/events/${id}`, {
+      const response = await fetch(`/api/events/${id}`, {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Etkinlik silinirken bir hata oluştu');
+        let errorMessage = 'Etkinlik silinirken bir hata oluştu';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = `Sunucu hatası: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       await fetchEvents();
@@ -88,4 +115,4 @@ export function useEvents() {
     throw new Error('useEvents must be used within an EventProvider');
   }
   return context;
-} 
+}
