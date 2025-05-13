@@ -36,8 +36,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
       
-      // Use relative URL to automatically match the current protocol and host
-      const response = await fetch('/api/events', {
+      const response = await fetch('http://localhost:3001/api/events', {
         credentials: 'include',
         headers: {
           'Accept': 'application/json',
@@ -72,7 +71,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
 
   const deleteEvent = useCallback(async (id: number) => {
     try {
-      const response = await fetch(`/api/events/${id}`, {
+      const response = await fetch(`http://localhost:3001/api/events/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
