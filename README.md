@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Etkinlik Yönetim Sistemi
 
-## Getting Started
+Bu proje, etkinliklerin yönetimi ve katılımcıların takibi için geliştirilmiş bir web uygulamasıdır.
 
-First, run the development server:
+## Özellikler
 
+- Kullanıcı yönetimi (kayıt, giriş, profil)
+- Etkinlik oluşturma ve yönetme
+- Etkinliklere katılım
+- Admin paneli
+- İstatistikler ve raporlama
+- Duyuru sistemi
+
+## Teknolojiler
+
+### Frontend
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Heroicons
+
+### Backend
+- Node.js
+- Express.js
+- Prisma ORM
+- PostgreSQL
+
+## Kurulum
+
+1. Projeyi klonlayın:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [repo-url]
+cd [proje-klasörü]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Frontend bağımlılıklarını yükleyin:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Backend bağımlılıklarını yükleyin:
+```bash
+cd backend
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Gerekli ortam değişkenlerini ayarlayın:
+- Frontend için `.env.local` dosyası oluşturun:
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
 
-## Learn More
+- Backend için `.env` dosyası oluşturun:
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
+JWT_SECRET="your-secret-key"
+FRONTEND_URL="http://localhost:3000"
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Veritabanını oluşturun:
+```bash
+cd backend
+npx prisma migrate dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. Uygulamayı başlatın:
+- Frontend için:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Backend için:
+```bash
+cd backend
+npm run dev
+```
 
-## Deploy on Vercel
+## Kullanım
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Lisans
+
+MIT
